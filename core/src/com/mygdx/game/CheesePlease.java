@@ -4,12 +4,15 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class CheesePlease extends Game {
 
@@ -18,9 +21,11 @@ public class CheesePlease extends Game {
     private BaseActor cheese;
     private BaseActor floor;
     private BaseActor winText;
+    private Boolean win;
 
     public void create() {
         mainStage = new Stage();
+        win = false;
 
         floor = new BaseActor();
         floor.setTexture(new Texture(Gdx.files.internal("assets/tiles.jpg")));
@@ -34,6 +39,7 @@ public class CheesePlease extends Game {
 
         mousey = new BaseActor();
         mousey.setTexture(new Texture(Gdx.files.internal("assets/mouse.png")));
+        mousey.setOrigin(mousey.getWidth()/2, mousey.getHeight()/2);
         mousey.setPosition(20,20);
         mainStage.addActor(mousey);
 
@@ -51,13 +57,13 @@ public class CheesePlease extends Game {
         mousey.velocityY = 0;
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-            mousey.velocityX -= 100;
+            mousey.velocityX -= 200;
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-            mousey.velocityX += 100;
+            mousey.velocityX += 200;
         if(Gdx.input.isKeyPressed(Input.Keys.UP))
-            mousey.velocityY += 100;
+            mousey.velocityY += 200;
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-            mousey.velocityY -= 100;
+            mousey.velocityY -= 200;
 
 
 
@@ -69,8 +75,32 @@ public class CheesePlease extends Game {
         Rectangle cheeseRectangle = cheese.getBoundingRectangle();
         Rectangle mouseyRectangle = mousey.getBoundingRectangle();
 
-        if(cheeseRectangle.contains(mouseyRectangle))
-            winText.setVisible(true);
+        if (!win && cheeseRectangle.contains(mouseyRectangle)) {
+
+            Action spinShrinkFadeOut = Actions.parallel(
+                Actions.alpha(1),   // Set transparency
+                Actions.rotateBy(360, 1),   // Rotation amount, duration
+                Actions.scaleTo(0,0,1),             // x amount, y amount, duration
+                Actions.fadeOut(1)                        // Duration of fade out
+            );
+
+            cheese.addAction(spinShrinkFadeOut);
+
+            Action fadeInColorCycleForever = Actions.sequence(
+                    Actions.alpha(0),
+                    Actions.show(),
+                    Actions.fadeIn(2),
+                    Actions.forever(
+                            Actions.sequence(
+                                    Actions.color(new Color(1,0,0,1),1),
+                                    Actions.color(new Color(0,0,1,1),1)
+                            )
+                    )
+            );
+            winText.addAction(fadeInColorCycleForever);
+
+
+        }
 
         // Draw Graphics
         Gdx.gl.glClearColor(0.8f, 0.8f, 1,1);

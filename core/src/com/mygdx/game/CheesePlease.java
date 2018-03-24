@@ -4,10 +4,12 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,6 +19,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class CheesePlease extends Game {
+
+    // Game world dimensions
+    final int mapWidth = 800;
+    final int mapHeight = 800;
+
+    // Window dimensions
+    final int viewWidth = 640;
+    final int viewHeight = 480;
 
     public Stage mainStage;
     public Stage uiStage;
@@ -44,7 +54,7 @@ public class CheesePlease extends Game {
 
 
         floor = new BaseActor();
-        floor.setTexture(new Texture(Gdx.files.internal("assets/tiles.jpg")));
+        floor.setTexture(new Texture(Gdx.files.internal("assets/tiles-800-800.jpg")));
         floor.setPosition(0,0);
         mainStage.addActor(floor);
 
@@ -98,6 +108,9 @@ public class CheesePlease extends Game {
         mainStage.act(dt);
         uiStage.act(dt);
 
+        mousey.setX(MathUtils.clamp(mousey.getX(),0,mapWidth - mousey.getWidth()));
+        mousey.setY(MathUtils.clamp(mousey.getY(),0,mapHeight - mousey.getHeight()));
+
         if (!win) {
             timeElapsed += dt;
             timeLabel.setText("Time: " + (int)timeElapsed);
@@ -138,6 +151,14 @@ public class CheesePlease extends Game {
         // Draw Graphics
         Gdx.gl.glClearColor(0.8f, 0.8f, 1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Camera
+        Camera cam = mainStage.getCamera();
+        cam.position.set(mousey.getX() + mousey.getOriginX(),mousey.getY() + mousey.getOriginY(),0);
+        cam.position.x = MathUtils.clamp(cam.position.x, viewWidth/2, mapWidth - viewWidth/2);
+        cam.position.y = MathUtils.clamp(cam.position.y, viewHeight/2, mapHeight - viewHeight/2);
+        cam.update();
+
 
         mainStage.draw();
         uiStage.draw();

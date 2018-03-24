@@ -9,66 +9,73 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class CheesePlease extends Game {
 
-    private SpriteBatch batch;
-    private Sprite mouseySprite;
-    private Sprite cheeseSprite;
-    private Sprite floorSprite;
-    private Sprite winTextSprite;
-    private boolean win;
+    public Stage mainStage;
+    private BaseActor mousey;
+    private BaseActor cheese;
+    private BaseActor floor;
+    private BaseActor winText;
 
     public void create() {
-        batch = new SpriteBatch();
+        mainStage = new Stage();
 
-        mouseySprite = new Sprite(new Texture(Gdx.files.internal("assets/mouse.png")));
-        mouseySprite.setPosition(20,20);
+        floor = new BaseActor();
+        floor.setTexture(new Texture(Gdx.files.internal("assets/tiles.jpg")));
+        floor.setPosition(0,0);
+        mainStage.addActor(floor);
 
-        cheeseSprite = new Sprite(new Texture(Gdx.files.internal("assets/cheese.png")));
-        cheeseSprite.setPosition(400,300);
+        cheese = new BaseActor();
+        cheese.setTexture(new Texture(Gdx.files.internal("assets/cheese.png")));
+        cheese.setPosition(400,300);
+        mainStage.addActor(cheese);
 
-        floorSprite = new Sprite(new Texture(Gdx.files.internal("assets/tiles.jpg")));
-        floorSprite.setPosition(0,0);
+        mousey = new BaseActor();
+        mousey.setTexture(new Texture(Gdx.files.internal("assets/mouse.png")));
+        mousey.setPosition(20,20);
+        mainStage.addActor(mousey);
 
-        winTextSprite = new Sprite(new Texture(Gdx.files.internal("assets/you-win.png")));
-        winTextSprite.setPosition(170,60);
-
-        win = false;
+        winText = new BaseActor();
+        winText.setTexture(new Texture(Gdx.files.internal("assets/you-win.png")));
+        winText.setPosition(170,60);
+        winText.setVisible(false);
+        mainStage.addActor(winText);
     }
 
     public void render() {
 
         // Process input
+        mousey.velocityX = 0;
+        mousey.velocityY = 0;
+
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-            mouseySprite.translateX(-1);
+            mousey.velocityX -= 100;
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-            mouseySprite.translateX(1);
+            mousey.velocityX += 100;
         if(Gdx.input.isKeyPressed(Input.Keys.UP))
-            mouseySprite.translateY(1);
+            mousey.velocityY += 100;
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-            mouseySprite.translateY(-1);
+            mousey.velocityY -= 100;
+
+
+
+        // Update
+        float dt = Gdx.graphics.getDeltaTime();
+        mainStage.act(dt);
 
         // Check win condition
-        Rectangle cheeseRectangle = cheeseSprite.getBoundingRectangle();
-        Rectangle mouseyRectangle = mouseySprite.getBoundingRectangle();
+        Rectangle cheeseRectangle = cheese.getBoundingRectangle();
+        Rectangle mouseyRectangle = mousey.getBoundingRectangle();
 
         if(cheeseRectangle.contains(mouseyRectangle))
-            win = true;
+            winText.setVisible(true);
 
-        // Draw graphics
-        Gdx.gl.glClearColor(0.8f, 0.8f, 1, 1);
+        // Draw Graphics
+        Gdx.gl.glClearColor(0.8f, 0.8f, 1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.begin();
-        floorSprite.draw(batch);
-        cheeseSprite.draw(batch);
-        mouseySprite.draw(batch);
-        if(win)
-            winTextSprite.draw(batch);
-        batch.end();
+        mainStage.draw();
     }
 }
-
-
-// This is a comment from work

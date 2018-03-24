@@ -71,6 +71,7 @@ public class CheeseLevel implements Screen{
 
         cheese = new BaseActor();
         cheese.setTexture(new Texture(Gdx.files.internal("assets/cheese.png")));
+        cheese.setOrigin(cheese.getWidth()/2, cheese.getHeight()/2);
         cheese.setPosition(400,300);
         mainStage.addActor(cheese);
 
@@ -111,6 +112,9 @@ public class CheeseLevel implements Screen{
             mousey.velocityY += 200;
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
             mousey.velocityY -= 200;
+        if(Gdx.input.isKeyPressed(Input.Keys.M))
+            game.setScreen(new CheeseMenu(game));
+
 
 
 

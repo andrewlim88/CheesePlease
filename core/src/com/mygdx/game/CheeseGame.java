@@ -8,7 +8,7 @@ import com.badlogic.gdx.Game;
 
 public class CheeseGame extends Game{
     public void create() {
-        CheeseLevel cl = new CheeseLevel(this);
-        setScreen(cl);
+        CheeseMenu cm = new CheeseMenu(this);
+        setScreen(cm);
     }
 }

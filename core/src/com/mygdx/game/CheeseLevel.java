@@ -1,14 +1,16 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -16,9 +18,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
 
-public class CheesePlease extends Game {
+/**
+ * @author Andrew
+ */
+
+public class CheeseLevel implements Screen{
 
     // Game world dimensions
     final int mapWidth = 800;
@@ -37,6 +42,12 @@ public class CheesePlease extends Game {
     private Boolean win;
     private float timeElapsed;
     private Label timeLabel;
+    public Game game;
+
+    public CheeseLevel(Game g) {
+        game = g;
+        create();
+    }
 
     public void create() {
         mainStage = new Stage();
@@ -86,7 +97,7 @@ public class CheesePlease extends Game {
         uiStage.addActor(winText);
     }
 
-    public void render() {
+    public void render(float dt) {
 
         // Process input
         mousey.velocityX = 0;
@@ -104,7 +115,6 @@ public class CheesePlease extends Game {
 
 
         // Update
-        float dt = Gdx.graphics.getDeltaTime();
         mainStage.act(dt);
         uiStage.act(dt);
 
@@ -123,10 +133,10 @@ public class CheesePlease extends Game {
         if (!win && cheeseRectangle.contains(mouseyRectangle)) {
 
             Action spinShrinkFadeOut = Actions.parallel(
-                Actions.alpha(1),   // Set transparency
-                Actions.rotateBy(360, 1),   // Rotation amount, duration
-                Actions.scaleTo(0,0,1),             // x amount, y amount, duration
-                Actions.fadeOut(1)                        // Duration of fade out
+                    Actions.alpha(1),   // Set transparency
+                    Actions.rotateBy(360, 1),   // Rotation amount, duration
+                    Actions.scaleTo(0,0,1),             // x amount, y amount, duration
+                    Actions.fadeOut(1)                        // Duration of fade out
             );
 
 
@@ -163,4 +173,19 @@ public class CheesePlease extends Game {
         mainStage.draw();
         uiStage.draw();
     }
+
+
+
+
+    public void resize(int width, int height) {}
+
+    public void pause() {}
+
+    public void resume() {}
+
+    public void dispose() {}
+
+    public void show() {}
+
+    public void hide() {}
 }

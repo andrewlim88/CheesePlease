@@ -7,28 +7,41 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class CheesePlease extends Game {
 
     public Stage mainStage;
+    public Stage uiStage;
     private AnimatedActor mousey;
     private BaseActor cheese;
     private BaseActor floor;
     private BaseActor winText;
     private Boolean win;
+    private float timeElapsed;
+    private Label timeLabel;
 
     public void create() {
         mainStage = new Stage();
+        uiStage = new Stage();
         win = false;
+        timeElapsed = 0;
+
+        BitmapFont font = new BitmapFont();
+        String text = "Time: 0";
+        Label.LabelStyle style = new Label.LabelStyle(font, Color.NAVY);
+        timeLabel = new Label(text, style);
+        timeLabel.setFontScale(2);
+        timeLabel.setPosition(500,440);
+        uiStage.addActor(timeLabel);
+
 
         floor = new BaseActor();
         floor.setTexture(new Texture(Gdx.files.internal("assets/tiles.jpg")));
@@ -60,7 +73,7 @@ public class CheesePlease extends Game {
         winText.setTexture(new Texture(Gdx.files.internal("assets/you-win.png")));
         winText.setPosition(170,60);
         winText.setVisible(false);
-        mainStage.addActor(winText);
+        uiStage.addActor(winText);
     }
 
     public void render() {
@@ -83,6 +96,12 @@ public class CheesePlease extends Game {
         // Update
         float dt = Gdx.graphics.getDeltaTime();
         mainStage.act(dt);
+        uiStage.act(dt);
+
+        if (!win) {
+            timeElapsed += dt;
+            timeLabel.setText("Time: " + (int)timeElapsed);
+        }
 
         // Check win condition
         Rectangle cheeseRectangle = cheese.getBoundingRectangle();
@@ -121,5 +140,6 @@ public class CheesePlease extends Game {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         mainStage.draw();
+        uiStage.draw();
     }
 }

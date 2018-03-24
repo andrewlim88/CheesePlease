@@ -7,17 +7,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Array;
 
 public class CheesePlease extends Game {
 
     public Stage mainStage;
-    private BaseActor mousey;
+    private AnimatedActor mousey;
     private BaseActor cheese;
     private BaseActor floor;
     private BaseActor winText;
@@ -37,8 +40,18 @@ public class CheesePlease extends Game {
         cheese.setPosition(400,300);
         mainStage.addActor(cheese);
 
-        mousey = new BaseActor();
-        mousey.setTexture(new Texture(Gdx.files.internal("assets/mouse.png")));
+        TextureRegion[] frames = new TextureRegion[4];
+        for(int n = 0; n < 4; n++) {
+            String fileName = "assets/mouse" + n + ".png";
+            Texture tex = new Texture(Gdx.files.internal(fileName));
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            frames[n] = new TextureRegion(tex);
+        }
+        Array<TextureRegion> framesArray = new Array<TextureRegion>(frames);
+        Animation anim = new Animation(0.1f,framesArray, Animation.PlayMode.LOOP_PINGPONG);
+
+        mousey = new AnimatedActor();
+        mousey.setAnimation(anim);
         mousey.setOrigin(mousey.getWidth()/2, mousey.getHeight()/2);
         mousey.setPosition(20,20);
         mainStage.addActor(mousey);
@@ -84,12 +97,12 @@ public class CheesePlease extends Game {
                 Actions.fadeOut(1)                        // Duration of fade out
             );
 
-            cheese.addAction(spinShrinkFadeOut);
+
 
             Action fadeInColorCycleForever = Actions.sequence(
-                    Actions.alpha(0),
+                    //Actions.alpha(1),
                     Actions.show(),
-                    Actions.fadeIn(2),
+                    //Actions.fadeIn(2),
                     Actions.forever(
                             Actions.sequence(
                                     Actions.color(new Color(1,0,0,1),1),
@@ -98,6 +111,7 @@ public class CheesePlease extends Game {
                     )
             );
             winText.addAction(fadeInColorCycleForever);
+            cheese.addAction(spinShrinkFadeOut);
 
 
         }

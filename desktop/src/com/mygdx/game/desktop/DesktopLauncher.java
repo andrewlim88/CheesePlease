@@ -7,6 +7,6 @@ import com.mygdx.game.CheeseGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new CheeseGame(), config);
+        new LwjglApplication(new CheeseGame(), config);
 	}
 }

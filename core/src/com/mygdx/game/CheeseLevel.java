@@ -23,18 +23,13 @@ import com.badlogic.gdx.utils.Array;
  * @author Andrew
  */
 
-public class CheeseLevel implements Screen{
+public class CheeseLevel extends BaseScreen{
 
     // Game world dimensions
     final int mapWidth = 800;
     final int mapHeight = 800;
 
-    // Window dimensions
-    final int viewWidth = 640;
-    final int viewHeight = 480;
 
-    public Stage mainStage;
-    public Stage uiStage;
     private AnimatedActor mousey;
     private BaseActor cheese;
     private BaseActor floor;
@@ -42,27 +37,13 @@ public class CheeseLevel implements Screen{
     private Boolean win;
     private float timeElapsed;
     private Label timeLabel;
-    public Game game;
 
     public CheeseLevel(Game g) {
-        game = g;
-        create();
+        super(g);
     }
 
     public void create() {
-        mainStage = new Stage();
-        uiStage = new Stage();
-        win = false;
         timeElapsed = 0;
-
-        BitmapFont font = new BitmapFont();
-        String text = "Time: 0";
-        Label.LabelStyle style = new Label.LabelStyle(font, Color.NAVY);
-        timeLabel = new Label(text, style);
-        timeLabel.setFontScale(2);
-        timeLabel.setPosition(500,440);
-        uiStage.addActor(timeLabel);
-
 
         floor = new BaseActor();
         floor.setTexture(new Texture(Gdx.files.internal("assets/tiles-800-800.jpg")));
@@ -96,9 +77,19 @@ public class CheeseLevel implements Screen{
         winText.setPosition(170,60);
         winText.setVisible(false);
         uiStage.addActor(winText);
+
+        BitmapFont font = new BitmapFont();
+        String text = "Time: 0";
+        Label.LabelStyle style = new Label.LabelStyle(font, Color.NAVY);
+        timeLabel = new Label(text, style);
+        timeLabel.setFontScale(2);
+        timeLabel.setPosition(500,440);
+        uiStage.addActor(timeLabel);
+
+        win = false;
     }
 
-    public void render(float dt) {
+    public void update(float dt) {
 
         // Process input
         mousey.velocityX = 0;
@@ -112,16 +103,8 @@ public class CheeseLevel implements Screen{
             mousey.velocityY += 200;
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
             mousey.velocityY -= 200;
-        if(Gdx.input.isKeyPressed(Input.Keys.M))
-            game.setScreen(new CheeseMenu(game));
 
-
-
-
-        // Update
-        mainStage.act(dt);
-        uiStage.act(dt);
-
+        // Bound mousey to the map
         mousey.setX(MathUtils.clamp(mousey.getX(),0,mapWidth - mousey.getWidth()));
         mousey.setY(MathUtils.clamp(mousey.getY(),0,mapHeight - mousey.getHeight()));
 
@@ -162,23 +145,24 @@ public class CheeseLevel implements Screen{
 
         }
 
-        // Draw Graphics
-        Gdx.gl.glClearColor(0.8f, 0.8f, 1,1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         // Camera
         Camera cam = mainStage.getCamera();
         cam.position.set(mousey.getX() + mousey.getOriginX(),mousey.getY() + mousey.getOriginY(),0);
         cam.position.x = MathUtils.clamp(cam.position.x, viewWidth/2, mapWidth - viewWidth/2);
         cam.position.y = MathUtils.clamp(cam.position.y, viewHeight/2, mapHeight - viewHeight/2);
         cam.update();
-
-
-        mainStage.draw();
-        uiStage.draw();
     }
 
+    // InputProcessor for handling discrete input
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.M)
+            game.setScreen(new CheeseMenu(game));
 
+        if (keycode == Input.Keys.P)
+            togglePaused();
+
+        return false;
+    }
 
 
     public void resize(int width, int height) {}
